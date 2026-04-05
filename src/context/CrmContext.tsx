@@ -1,10 +1,24 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import type { Case, ViewMode, CallResult, Strategy, AlertType, Probability, Contact, Proposal } from '../types';
-import { mockCases } from '../data/mockData';
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import type {
+  Case, ViewMode, CallResult, Strategy, AlertType, Probability,
+  ContactType, PaymentTerms,
+} from '../types';
+import { useAuth } from './AuthContext';
+import {
+  fetchCasesForTenant,
+  logInteraction,
+  createAlert as createAlertQuery,
+  updateCaseStrategy as updateStrategyQuery,
+  addContact as addContactQuery,
+  blockContact,
+  createProposal as createProposalQuery,
+  updateProposal as updateProposalQuery,
+} from '../lib/queries';
 import { sortByPriority } from '../utils/priorityQueue';
 
 interface CrmState {
   cases: Case[];
+  loading: boolean;
   currentView: ViewMode;
   currentCaseId: string | null;
   queueIndex: number;
@@ -16,30 +30,53 @@ interface CrmActions {
   startCalls: () => void;
   goToDashboard: () => void;
   showCallLog: () => void;
-  logCall: (resultCode: CallResult, comment: string) => void;
+  showActiveCall: () => void;
+  logCall: (callResult: CallResult, comment: string) => Promise<void>;
   showNextAction: () => void;
   advanceToNextCase: () => void;
-  createAlert: (dueDate: string, type: AlertType, description: string) => void;
-  changeStrategy: (strategy: Strategy) => void;
-  addContact: (partyId: string, type: 'phone' | 'email', value: string, relationshipNote: string) => void;
-  invalidatePhone: (contactId: string) => void;
-  createProposal: (collateralId: string, strategyType: Strategy, probability: Probability, estimatedSigningDate: string) => void;
-  updateProposal: (proposalId: string, updates: Partial<Proposal>) => void;
+  createAlert: (dueDate: string, type: AlertType, description: string) => Promise<void>;
+  changeStrategy: (strategy: Strategy) => Promise<void>;
+  addContact: (partyId: string | null, type: ContactType, value: string, lawyerName?: string | null) => Promise<void>;
+  blockPhone: (contactId: string, reason: string) => Promise<void>;
+  createProposal: (params: {
+    strategy_type: Strategy;
+    amount: number;
+    payment_terms: PaymentTerms;
+    installment_count: number | null;
+    installment_frequency: 'monthly' | 'quarterly' | null;
+    probability: Probability;
+    expected_closing_date: string;
+    loan_ids: string[];
+    collateral_ids: string[];
+  }) => Promise<void>;
+  updateProposal: (proposalId: string, updates: Record<string, unknown>) => Promise<void>;
+  refreshCases: () => Promise<void>;
 }
 
 const CrmContext = createContext<(CrmState & CrmActions) | null>(null);
 
 export function CrmProvider({ children }: { children: ReactNode }) {
-  const [cases, setCases] = useState<Case[]>(mockCases);
+  const { user } = useAuth();
+  const [cases, setCases] = useState<Case[]>([]);
+  const [loading, setLoading] = useState(true);
   const [currentView, setCurrentView] = useState<ViewMode>('dashboard');
   const [currentCaseId, setCurrentCaseId] = useState<string | null>(null);
   const [queueIndex, setQueueIndex] = useState(0);
 
   const queue = sortByPriority(cases.filter((c) => c.stage !== 'resolved'));
 
-  const updateCase = useCallback((caseId: string, updater: (c: Case) => Case) => {
-    setCases((prev) => prev.map((c) => (c.id === caseId ? updater(c) : c)));
+  const refreshCases = useCallback(async () => {
+    const data = await fetchCasesForTenant();
+    setCases(data);
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      refreshCases().finally(() => setLoading(false));
+    } else {
+      setLoading(false);
+    }
+  }, [user, refreshCases]);
 
   const openCase = useCallback((id: string) => {
     setCurrentCaseId(id);
@@ -50,7 +87,7 @@ export function CrmProvider({ children }: { children: ReactNode }) {
     if (queue.length > 0) {
       setQueueIndex(0);
       setCurrentCaseId(queue[0].id);
-      setCurrentView('case_detail');
+      setCurrentView('active_call');
     }
   }, [queue]);
 
@@ -63,24 +100,24 @@ export function CrmProvider({ children }: { children: ReactNode }) {
     setCurrentView('call_log');
   }, []);
 
-  const logCall = useCallback((resultCode: CallResult, comment: string) => {
-    if (!currentCaseId) return;
-    const interaction = {
-      id: `i-${Date.now()}`,
-      caseId: currentCaseId,
-      type: 'call' as const,
-      resultCode,
+  const showActiveCall = useCallback(() => {
+    setCurrentView('active_call');
+  }, []);
+
+  const logCall = useCallback(async (callResult: CallResult, comment: string) => {
+    if (!currentCaseId || !user) return;
+    await logInteraction({
+      tenant_id: user.tenant_id,
+      case_id: currentCaseId,
+      type: 'call',
+      call_result: callResult,
+      participant_contacted_id: null,
+      phone_called: null,
       comment,
-      createdBy: 'Carlos Ruiz',
-      createdAt: new Date().toISOString().split('T')[0],
-    };
-    updateCase(currentCaseId, (c) => ({
-      ...c,
-      interactions: [...c.interactions, interaction],
-      updatedAt: interaction.createdAt,
-      stage: c.stage === 'pre_contact' ? 'contacted' : c.stage,
-    }));
-  }, [currentCaseId, updateCase]);
+      created_by: user.id,
+    });
+    await refreshCases();
+  }, [currentCaseId, user, refreshCases]);
 
   const showNextAction = useCallback(() => {
     setCurrentView('next_action');
@@ -98,75 +135,76 @@ export function CrmProvider({ children }: { children: ReactNode }) {
     }
   }, [queueIndex, queue]);
 
-  const createAlert = useCallback((dueDate: string, type: AlertType, description: string) => {
-    if (!currentCaseId) return;
-    updateCase(currentCaseId, (c) => ({
-      ...c,
-      alerts: [...c.alerts, { id: `a-${Date.now()}`, caseId: currentCaseId, dueDate, type, description, resolvedAt: null }],
-    }));
-  }, [currentCaseId, updateCase]);
+  const createAlert = useCallback(async (dueDate: string, type: AlertType, description: string) => {
+    if (!currentCaseId || !user) return;
+    await createAlertQuery({
+      tenant_id: user.tenant_id,
+      case_id: currentCaseId,
+      type,
+      description,
+      due_date: dueDate,
+      created_by: user.id,
+    });
+    await refreshCases();
+  }, [currentCaseId, user, refreshCases]);
 
-  const changeStrategy = useCallback((strategy: Strategy) => {
+  const changeStrategy = useCallback(async (strategy: Strategy) => {
     if (!currentCaseId) return;
-    updateCase(currentCaseId, (c) => ({ ...c, strategy }));
-  }, [currentCaseId, updateCase]);
+    await updateStrategyQuery(currentCaseId, strategy);
+    await refreshCases();
+  }, [currentCaseId, refreshCases]);
 
-  const addContact = useCallback((partyId: string, type: 'phone' | 'email', value: string, relationshipNote: string) => {
-    if (!currentCaseId) return;
-    const contact: Contact = {
-      id: `c-${Date.now()}`,
-      partyId,
+  const addContact = useCallback(async (partyId: string | null, type: ContactType, value: string, lawyerName?: string | null) => {
+    if (!currentCaseId || !user) return;
+    await addContactQuery({
+      tenant_id: user.tenant_id,
+      case_id: currentCaseId,
+      party_id: partyId,
+      lawyer_name: lawyerName ?? null,
       type,
       value,
-      isInvalid: false,
-      relationshipNote,
-      addedBy: 'Carlos Ruiz',
-      addedAt: new Date().toISOString().split('T')[0],
-    };
-    updateCase(currentCaseId, (c) => ({ ...c, contacts: [...c.contacts, contact] }));
-  }, [currentCaseId, updateCase]);
+      added_by: user.id,
+    });
+    await refreshCases();
+  }, [currentCaseId, user, refreshCases]);
 
-  const invalidatePhone = useCallback((contactId: string) => {
-    if (!currentCaseId) return;
-    updateCase(currentCaseId, (c) => ({
-      ...c,
-      contacts: c.contacts.map((ct) => (ct.id === contactId ? { ...ct, isInvalid: true } : ct)),
-    }));
-  }, [currentCaseId, updateCase]);
+  const blockPhone = useCallback(async (contactId: string, reason: string) => {
+    if (!user) return;
+    await blockContact(contactId, reason, user.id);
+    await refreshCases();
+  }, [user, refreshCases]);
 
-  const createProposal = useCallback((collateralId: string, strategyType: Strategy, probability: Probability, estimatedSigningDate: string) => {
-    if (!currentCaseId) return;
-    const proposal: Proposal = {
-      id: `pr-${Date.now()}`,
-      caseId: currentCaseId,
-      collateralId,
-      strategyType,
-      probability,
-      estimatedSigningDate,
-      createdAt: new Date().toISOString().split('T')[0],
-      cancelledAt: null,
-    };
-    updateCase(currentCaseId, (c) => ({
-      ...c,
-      proposals: [...c.proposals, proposal],
-      stage: c.stage !== 'resolved' ? 'proposal' : c.stage,
-    }));
-  }, [currentCaseId, updateCase]);
+  const createProposal = useCallback(async (params: {
+    strategy_type: Strategy;
+    amount: number;
+    payment_terms: PaymentTerms;
+    installment_count: number | null;
+    installment_frequency: 'monthly' | 'quarterly' | null;
+    probability: Probability;
+    expected_closing_date: string;
+    loan_ids: string[];
+    collateral_ids: string[];
+  }) => {
+    if (!currentCaseId || !user) return;
+    await createProposalQuery({
+      tenant_id: user.tenant_id,
+      case_id: currentCaseId,
+      created_by: user.id,
+      ...params,
+    });
+    await refreshCases();
+  }, [currentCaseId, user, refreshCases]);
 
-  const updateProposal = useCallback((proposalId: string, updates: Partial<Proposal>) => {
-    if (!currentCaseId) return;
-    updateCase(currentCaseId, (c) => ({
-      ...c,
-      proposals: c.proposals.map((p) => (p.id === proposalId ? { ...p, ...updates } : p)),
-    }));
-  }, [currentCaseId, updateCase]);
-
-  const currentCase = cases.find((c) => c.id === currentCaseId) || null;
+  const updateProposal = useCallback(async (proposalId: string, updates: Record<string, unknown>) => {
+    await updateProposalQuery(proposalId, updates);
+    await refreshCases();
+  }, [refreshCases]);
 
   return (
     <CrmContext.Provider
       value={{
         cases,
+        loading,
         currentView,
         currentCaseId,
         queueIndex,
@@ -175,15 +213,17 @@ export function CrmProvider({ children }: { children: ReactNode }) {
         startCalls,
         goToDashboard,
         showCallLog,
+        showActiveCall,
         logCall,
         showNextAction,
         advanceToNextCase,
         createAlert,
         changeStrategy,
         addContact,
-        invalidatePhone,
+        blockPhone,
         createProposal,
         updateProposal,
+        refreshCases,
       }}
     >
       {children}

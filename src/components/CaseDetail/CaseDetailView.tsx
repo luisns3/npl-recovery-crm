@@ -6,16 +6,16 @@ import ProposalList from '../Proposals/ProposalList';
 
 export default function CaseDetailView() {
   const c = useCurrentCase();
-  const { goToDashboard, showCallLog } = useCrm();
+  const { goToDashboard, showActiveCall } = useCrm();
 
   if (!c) return null;
 
   const borrower = c.parties.find((p) => p.role === 'borrower');
-  const primaryPhone = c.contacts.find((ct) => ct.type === 'phone' && !ct.isInvalid);
+  const primaryPhone = c.contacts.find((ct) => ct.type === 'phone' && !ct.is_blocked);
   const lastInteraction = c.interactions.length > 0
-    ? c.interactions.reduce((a, b) => (a.createdAt > b.createdAt ? a : b))
+    ? c.interactions.reduce((a, b) => (a.created_at > b.created_at ? a : b))
     : null;
-  const activeAlerts = c.alerts.filter((a) => !a.resolvedAt);
+  const activeAlerts = c.alerts.filter((a) => !a.resolved_at);
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
@@ -39,10 +39,10 @@ export default function CaseDetailView() {
             ) : (
               <p className="text-lg text-red-600 font-medium">No valid phone number</p>
             )}
-            <p className="text-xs text-indigo-600 mt-1">{primaryPhone?.relationshipNote}</p>
+            <p className="text-xs text-indigo-600 mt-1">{primaryPhone?.type === 'phone' ? 'Phone' : ''}</p>
           </div>
           <button
-            onClick={showCallLog}
+            onClick={showActiveCall}
             disabled={!primaryPhone}
             className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3 px-8 rounded-lg text-lg transition-colors"
           >
@@ -58,9 +58,9 @@ export default function CaseDetailView() {
               .map((ct) => (
                 <span
                   key={ct.id}
-                  className={`text-xs px-2 py-1 rounded ${ct.isInvalid ? 'bg-red-100 text-red-500 line-through' : 'bg-gray-100 text-gray-700'}`}
+                  className={`text-xs px-2 py-1 rounded ${ct.is_blocked ? 'bg-red-100 text-red-500 line-through' : 'bg-gray-100 text-gray-700'}`}
                 >
-                  {ct.value} {ct.isInvalid && '(invalid)'}
+                  {ct.value} {ct.is_blocked && '(blocked)'}
                 </span>
               ))}
           </div>
@@ -84,7 +84,7 @@ export default function CaseDetailView() {
           <div className="bg-gray-50 rounded-lg p-3">
             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Last Interaction</h3>
             <p className="text-sm text-gray-700">{lastInteraction.comment}</p>
-            <p className="text-xs text-gray-400 mt-1">{lastInteraction.createdAt} &middot; {lastInteraction.createdBy}</p>
+            <p className="text-xs text-gray-400 mt-1">{lastInteraction.created_at} &middot; {lastInteraction.created_by}</p>
           </div>
         )}
 
@@ -97,7 +97,7 @@ export default function CaseDetailView() {
                 <div key={a.id} className="flex items-center gap-2 text-sm bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
                   <span className="text-amber-600 font-medium">{a.type.replace('_', ' ')}</span>
                   <span className="text-gray-600">{a.description}</span>
-                  <span className="text-xs text-gray-400 ml-auto">{a.dueDate}</span>
+                  <span className="text-xs text-gray-400 ml-auto">{a.due_date}</span>
                 </div>
               ))}
             </div>

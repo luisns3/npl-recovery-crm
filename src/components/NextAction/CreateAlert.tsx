@@ -11,9 +11,9 @@ export default function CreateAlert() {
   const [desc, setDesc] = useState('');
   const [saved, setSaved] = useState(false);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!date || !desc.trim()) return;
-    createAlert(date, type, desc.trim());
+    await createAlert(date, type, desc.trim());
     setSaved(true);
     setDate('');
     setDesc('');

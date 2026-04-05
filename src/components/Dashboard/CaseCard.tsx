@@ -5,7 +5,7 @@ import { daysSinceLastInteraction, activeAlertCount } from '../../utils/priority
 export default function CaseCard({ c }: { c: Case }) {
   const { openCase } = useCrm();
   const borrower = c.parties.find((p) => p.role === 'borrower');
-  const totalDebt = c.loans.reduce((sum, l) => sum + l.outstandingAmount, 0);
+  const totalDebt = c.loans.reduce((sum, l) => sum + l.total_debt, 0);
   const days = daysSinceLastInteraction(c);
   const alerts = activeAlertCount(c);
 

@@ -8,17 +8,24 @@ export default function CollateralInfo({ collaterals }: { collaterals: Collatera
         {collaterals.map((col) => (
           <div key={col.id} className="bg-gray-50 rounded-lg p-3 text-sm">
             <div className="flex items-center justify-between mb-1">
-              <span className="font-medium text-gray-900">{col.type}</span>
-              <span className="text-indigo-600 font-medium">{col.valuation.toLocaleString('es-ES')} EUR</span>
+              <span className="font-medium text-gray-900">{col.property_type}</span>
+              <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-600 capitalize">{col.occupancy_status.replace('_', ' ')}</span>
             </div>
             <p className="text-gray-600 text-xs">{col.address}</p>
             <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
-              <span>{col.sizeSqm} m2</span>
-              <span>{col.registryData}</span>
-              <span>Ref: {col.cadastralRef}</span>
-              <a href={col.mapsUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:underline">
-                Google Maps
-              </a>
+              {col.surface_sqm && <span>{col.surface_sqm} m2</span>}
+              {col.plot_registry && <span>{col.plot_registry}</span>}
+              {col.cadastral_ref && <span>Ref: {col.cadastral_ref}</span>}
+              {col.latitude && col.longitude && (
+                <a
+                  href={`https://maps.google.com/?q=${col.latitude},${col.longitude}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-indigo-500 hover:underline"
+                >
+                  Google Maps
+                </a>
+              )}
             </div>
           </div>
         ))}

@@ -3,7 +3,10 @@ import { useCrm, useCurrentCase } from '../../context/CrmContext';
 import type { CallResult } from '../../types';
 import { CALL_RESULT_LABELS } from '../../types';
 
-const RESULT_OPTIONS: CallResult[] = ['no_answer', 'not_interested', 'will_callback', 'agreement', 'wrong_number'];
+const RESULT_OPTIONS: CallResult[] = [
+  'not_answering', 'cup', 'cun', 'wrong_number',
+  'voicemail', 'callback', 'refused', 'third_party',
+];
 
 export default function CallLogModal() {
   const c = useCurrentCase();
@@ -16,9 +19,9 @@ export default function CallLogModal() {
   const borrower = c.parties.find((p) => p.role === 'borrower');
   const canSubmit = result !== '' && comment.trim().length > 0;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!canSubmit) return;
-    logCall(result as CallResult, comment.trim());
+    await logCall(result as CallResult, comment.trim());
     showNextAction();
   };
 

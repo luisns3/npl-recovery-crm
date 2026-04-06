@@ -8,9 +8,12 @@ import CaseDetailView from './components/CaseDetail/CaseDetailView';
 import CallLogModal from './components/CallLog/CallLogModal';
 import NextActionScreen from './components/NextAction/NextActionScreen';
 import ActiveCallScreen from './components/ActiveCall/ActiveCallScreen';
+import LoginSummaryPopup, { useLoginSummary } from './components/Dashboard/LoginSummaryPopup';
+import type { Case } from './types';
 
 function AppContent() {
-  const { currentView, loading } = useCrm();
+  const { currentView, loading, openCase } = useCrm();
+  const { showSummary, dismiss } = useLoginSummary();
 
   if (loading) {
     return (
@@ -19,6 +22,26 @@ function AppContent() {
       </div>
     );
   }
+
+  function handleOpenLegalAlerts(cases: Case[]) {
+    dismiss();
+    if (cases.length > 0) {
+      openCase(cases[0].id);
+    }
+  }
+
+  return (
+    <>
+      {showSummary && currentView === 'dashboard' && (
+        <LoginSummaryPopup onDismiss={dismiss} onOpenLegalAlerts={handleOpenLegalAlerts} />
+      )}
+      <AppContentInner />
+    </>
+  );
+}
+
+function AppContentInner() {
+  const { currentView } = useCrm();
 
   if (currentView === 'active_call') return <ActiveCallScreen />;
   if (currentView === 'case_detail') return <CaseDetailView />;

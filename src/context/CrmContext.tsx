@@ -26,11 +26,14 @@ interface CrmState {
 }
 
 interface CrmActions {
+  navigate: (view: ViewMode) => void;
   openCase: (id: string) => void;
+  openGroup: (groupId: string) => void;
   startCalls: () => void;
   goToDashboard: () => void;
   showCallLog: () => void;
   showActiveCall: () => void;
+  currentGroupId: string | null;
   logCall: (callResult: CallResult, comment: string) => Promise<void>;
   showNextAction: () => void;
   advanceToNextCase: () => void;
@@ -62,6 +65,7 @@ export function CrmProvider({ children }: { children: ReactNode }) {
   const [currentView, setCurrentView] = useState<ViewMode>('dashboard');
   const [currentCaseId, setCurrentCaseId] = useState<string | null>(null);
   const [queueIndex, setQueueIndex] = useState(0);
+  const [currentGroupId, setCurrentGroupId] = useState<string | null>(null);
 
   const queue = sortByPriority(cases.filter((c) => c.stage !== 'resolved'));
 
@@ -78,9 +82,21 @@ export function CrmProvider({ children }: { children: ReactNode }) {
     }
   }, [user, refreshCases]);
 
+  const navigate = useCallback((view: ViewMode) => {
+    setCurrentView(view);
+    if (view !== 'case_detail' && view !== 'active_call' && view !== 'call_log' && view !== 'next_action') {
+      setCurrentCaseId(null);
+    }
+  }, []);
+
   const openCase = useCallback((id: string) => {
     setCurrentCaseId(id);
     setCurrentView('case_detail');
+  }, []);
+
+  const openGroup = useCallback((groupId: string) => {
+    setCurrentGroupId(groupId);
+    setCurrentView('group_view');
   }, []);
 
   const startCalls = useCallback(() => {
@@ -209,7 +225,10 @@ export function CrmProvider({ children }: { children: ReactNode }) {
         currentCaseId,
         queueIndex,
         queue,
+        navigate,
         openCase,
+        openGroup,
+        currentGroupId,
         startCalls,
         goToDashboard,
         showCallLog,

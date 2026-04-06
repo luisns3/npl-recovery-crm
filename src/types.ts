@@ -246,7 +246,16 @@ export interface Case {
   proposals: Proposal[];
 }
 
-export type ViewMode = 'dashboard' | 'case_detail' | 'call_log' | 'next_action' | 'active_call';
+export type ViewMode =
+  | 'dashboard'
+  | 'perimeter'
+  | 'tasks'
+  | 'call_queue'
+  | 'case_detail'
+  | 'call_log'
+  | 'next_action'
+  | 'active_call'
+  | 'group_view';
 
 // ============================================
 // Display Labels

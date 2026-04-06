@@ -2,13 +2,15 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { CrmProvider, useCrm } from './context/CrmContext';
 import Layout from './components/Layout';
 import LoginPage from './components/Auth/LoginPage';
-import CallQueue from './components/Dashboard/CallQueue';
-import KanbanBoard from './components/Dashboard/KanbanBoard';
+import KpiDashboard from './components/Dashboard/KpiDashboard';
 import CaseDetailView from './components/CaseDetail/CaseDetailView';
 import CallLogModal from './components/CallLog/CallLogModal';
 import NextActionScreen from './components/NextAction/NextActionScreen';
 import ActiveCallScreen from './components/ActiveCall/ActiveCallScreen';
 import LoginSummaryPopup, { useLoginSummary } from './components/Dashboard/LoginSummaryPopup';
+import PerimeterView from './components/Perimeter/PerimeterView';
+import TasksView from './components/Tasks/TasksView';
+import CallQueueView from './components/CallQueue/CallQueueView';
 import type { Case } from './types';
 
 function AppContent() {
@@ -47,13 +49,11 @@ function AppContentInner() {
   if (currentView === 'case_detail') return <CaseDetailView />;
   if (currentView === 'call_log') return <CallLogModal />;
   if (currentView === 'next_action') return <NextActionScreen />;
+  if (currentView === 'perimeter') return <PerimeterView />;
+  if (currentView === 'tasks') return <TasksView />;
+  if (currentView === 'call_queue') return <CallQueueView />;
 
-  return (
-    <div className="flex h-full">
-      <CallQueue />
-      <KanbanBoard />
-    </div>
-  );
+  return <KpiDashboard />;
 }
 
 function AuthenticatedApp() {

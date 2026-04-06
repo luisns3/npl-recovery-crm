@@ -1,4 +1,4 @@
-import type { Case, Loan, Collateral, LoanCollateral } from '../../types';
+import type { Case } from '../../types';
 import { STRATEGY_LABELS } from '../../types';
 
 interface Props {
@@ -50,7 +50,6 @@ export default function CollateralMatrix({ c }: Props) {
           </thead>
           <tbody className="text-[10px]">
             {collaterals.map((col) => {
-              const colAsAny = col as Collateral & Record<string, unknown>;
               return (
                 <tr key={col.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                   <td className="p-3">

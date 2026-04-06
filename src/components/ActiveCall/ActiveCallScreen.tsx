@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useCrm, useCurrentCase } from '../../context/CrmContext';
-import type { CallResult, Party } from '../../types';
-import { CALL_RESULT_LABELS, STRATEGY_LABELS } from '../../types';
+import type { CallResult } from '../../types';
+import { CALL_RESULT_LABELS } from '../../types';
 import CollateralMatrix from './CollateralMatrix';
 import ProposalHistory from './ProposalHistory';
 import AffordabilityPanel from './AffordabilityPanel';

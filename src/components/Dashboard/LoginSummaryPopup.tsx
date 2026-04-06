@@ -5,14 +5,6 @@ import type { Case } from '../../types';
 
 const STORAGE_KEY = 'npl_crm_last_summary_date';
 
-function isToday(dateStr: string): boolean {
-  const d = new Date(dateStr);
-  const now = new Date();
-  return d.getFullYear() === now.getFullYear()
-    && d.getMonth() === now.getMonth()
-    && d.getDate() === now.getDate();
-}
-
 function isYesterday(dateStr: string): boolean {
   const d = new Date(dateStr);
   const now = new Date();

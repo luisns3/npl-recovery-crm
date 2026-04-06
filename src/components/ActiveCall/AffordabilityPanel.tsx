@@ -4,7 +4,7 @@ interface Props {
   party: Party;
 }
 
-export default function AffordabilityPanel({ party }: Props) {
+export default function AffordabilityPanel({ party: _party }: Props) {
   return (
     <div className="bg-slate-50/50 rounded-2xl border border-slate-200 flex flex-col overflow-hidden shadow-sm h-full">
       <div className="p-4 border-b border-slate-200 bg-white">

@@ -11,6 +11,7 @@ import LoginSummaryPopup, { useLoginSummary } from './components/Dashboard/Login
 import PerimeterView from './components/Perimeter/PerimeterView';
 import TasksView from './components/Tasks/TasksView';
 import CallQueueView from './components/CallQueue/CallQueueView';
+import GroupViewScreen from './components/GroupView/GroupViewScreen';
 import type { Case } from './types';
 
 function AppContent() {
@@ -52,6 +53,7 @@ function AppContentInner() {
   if (currentView === 'perimeter') return <PerimeterView />;
   if (currentView === 'tasks') return <TasksView />;
   if (currentView === 'call_queue') return <CallQueueView />;
+  if (currentView === 'group_view') return <GroupViewScreen />;
 
   return <KpiDashboard />;
 }

@@ -94,6 +94,41 @@ export interface Loan {
   accrued_interest: number;
   total_debt: number;
   strategy: Strategy;
+  procedura_id?: string | null;
+}
+
+export interface InsolvencyProceeding {
+  id: string;
+  case_id: string;
+  party_id: string;
+  role: 'deudor' | 'acreedor' | 'administrador_concursal';
+  status: 'activo' | 'resuelto' | 'pendiente';
+  court: string | null;
+  court_id: string | null;
+  filing_date: string | null;
+  resolution_date: string | null;
+  notes: string | null;
+}
+
+export interface AdditionalDebt {
+  id: string;
+  collateral_id: string;
+  type: 'IBI' | 'CCPP' | 'other';
+  description: string | null;
+  amount: number;
+  year: number | null;
+  status: 'pendiente' | 'pagado' | 'disputado';
+}
+
+export interface SkiptraceRequest {
+  id: string;
+  case_id: string;
+  party_id: string;
+  status: 'pendiente' | 'en_proceso' | 'completado';
+  notes: string | null;
+  requested_by: string;
+  requested_at: string;
+  completed_at: string | null;
 }
 
 export interface Collateral {
@@ -106,6 +141,7 @@ export interface Collateral {
   occupancy_status: OccupancyStatus;
   latitude: number | null;
   longitude: number | null;
+  procedura_id?: string | null;
 }
 
 export interface LoanCollateral {
@@ -244,6 +280,11 @@ export interface Case {
   interactions: Interaction[];
   alerts: Alert[];
   proposals: Proposal[];
+  // Optional extended data (future schema)
+  insolvency_proceedings?: InsolvencyProceeding[];
+  additional_debts?: AdditionalDebt[];
+  document_requests?: DocumentRequest[];
+  skiptrace_requests?: SkiptraceRequest[];
 }
 
 export type ViewMode =

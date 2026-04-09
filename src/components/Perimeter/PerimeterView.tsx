@@ -35,7 +35,7 @@ const BUCKETS: SegBucket[] = [
 ];
 
 export default function PerimeterView() {
-  const { cases, openCase } = useCrm();
+  const { cases, openGroup } = useCrm();
   const [tab, setTab] = useState<ViewTab>('segmentation');
   const [selectedBucket, setSelectedBucket] = useState<string | null>(null);
 
@@ -172,7 +172,7 @@ export default function PerimeterView() {
                     return (
                       <tr
                         key={c.id}
-                        onClick={() => openCase(c.id)}
+                        onClick={() => openGroup(c.group_id || c.id)}
                         className="hover:bg-slate-50 transition-colors cursor-pointer"
                       >
                         <td className="px-5 py-3 font-bold text-[#1a61a6]">{c.reference}</td>

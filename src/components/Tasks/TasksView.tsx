@@ -6,17 +6,18 @@ interface AlertWithCase extends Alert {
   case_ref: string;
   borrower: string;
   case_id: string;
+  group_id: string | null;
 }
 
 export default function TasksView() {
-  const { cases, openCase } = useCrm();
+  const { cases, openGroup } = useCrm();
 
   const allAlerts = useMemo(() => {
     const result: AlertWithCase[] = [];
     for (const c of cases) {
       const borrower = c.parties.find((p) => p.role === 'borrower')?.name || '';
       for (const a of c.alerts) {
-        result.push({ ...a, case_ref: c.reference, borrower, case_id: c.id });
+        result.push({ ...a, case_ref: c.reference, borrower, case_id: c.id, group_id: c.group_id });
       }
     }
     return result.sort((a, b) => a.due_date.localeCompare(b.due_date));
@@ -36,7 +37,7 @@ export default function TasksView() {
   function AlertRow({ alert }: { alert: AlertWithCase }) {
     return (
       <button
-        onClick={() => openCase(alert.case_id)}
+        onClick={() => openGroup(alert.group_id || alert.case_id)}
         className="w-full text-left px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0"
       >
         <div className="flex items-center gap-3 min-w-0">

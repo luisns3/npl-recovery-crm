@@ -20,6 +20,7 @@ interface CrmState {
   cases: Case[];
   loading: boolean;
   currentView: ViewMode;
+  previousView: ViewMode | null;
   currentCaseId: string | null;
   queueIndex: number;
   queue: Case[];
@@ -63,6 +64,7 @@ export function CrmProvider({ children }: { children: ReactNode }) {
   const [cases, setCases] = useState<Case[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentView, setCurrentView] = useState<ViewMode>('dashboard');
+  const [previousView, setPreviousView] = useState<ViewMode | null>(null);
   const [currentCaseId, setCurrentCaseId] = useState<string | null>(null);
   const [queueIndex, setQueueIndex] = useState(0);
   const [currentGroupId, setCurrentGroupId] = useState<string | null>(null);
@@ -95,9 +97,10 @@ export function CrmProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const openGroup = useCallback((groupId: string) => {
+    setPreviousView(currentView);
     setCurrentGroupId(groupId);
     setCurrentView('group_view');
-  }, []);
+  }, [currentView]);
 
   const startCalls = useCallback(() => {
     if (queue.length > 0) {
@@ -222,6 +225,7 @@ export function CrmProvider({ children }: { children: ReactNode }) {
         cases,
         loading,
         currentView,
+        previousView,
         currentCaseId,
         queueIndex,
         queue,

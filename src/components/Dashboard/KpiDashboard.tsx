@@ -33,7 +33,13 @@ export default function KpiDashboard() {
 
   const allProposals = useMemo(() => {
     return cases.flatMap((c) =>
-      c.proposals.map((p) => ({ ...p, case_ref: c.reference, borrower: c.parties.find((pt) => pt.role === 'borrower')?.name || '' }))
+      c.proposals.map((p) => ({
+        ...p,
+        case_ref: c.reference,
+        borrower: c.parties.find((pt) => pt.role === 'borrower')?.name || '',
+        case_id: c.id,
+        group_id: c.group_id,
+      }))
     );
   }, [cases]);
 

@@ -28,7 +28,7 @@ function daysUntilAuction(c: Case): number | null {
 }
 
 export default function CallQueueView() {
-  const { cases, openCase, startCalls } = useCrm();
+  const { cases, openCase, openGroup, startCalls } = useCrm();
 
   const groups = useMemo(() => {
     const groupMap = new Map<string, Case[]>();
@@ -125,7 +125,7 @@ export default function CallQueueView() {
                 {groups.map((g, idx) => (
                   <tr
                     key={g.groupId || g.cases[0].id}
-                    onClick={() => openCase(g.cases[0].id)}
+                    onClick={() => openGroup(g.groupId || g.cases[0].id)}
                     className="hover:bg-slate-50 transition-colors cursor-pointer group"
                   >
                     <td className="px-5 py-4 text-xs text-slate-400 font-mono">{idx + 1}</td>

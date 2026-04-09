@@ -1,9 +1,12 @@
 import type { Proposal, Probability } from '../../types';
 import { STRATEGY_LABELS, PROBABILITY_LABELS } from '../../types';
+import { useCrm } from '../../context/CrmContext';
 
 interface ProposalWithMeta extends Proposal {
   case_ref: string;
   borrower: string;
+  case_id?: string;
+  group_id?: string | null;
 }
 
 interface Props {
@@ -23,6 +26,7 @@ function formatEur(n: number): string {
 }
 
 export default function ProposalTable({ proposals }: Props) {
+  const { openGroup } = useCrm();
   const active = proposals.filter((p) => !p.cancelled_at);
   const cancelled = proposals.filter((p) => p.cancelled_at);
   const all = [...active, ...cancelled];
@@ -60,7 +64,8 @@ export default function ProposalTable({ proposals }: Props) {
             {all.map((p) => (
               <tr
                 key={p.id}
-                className={`hover:bg-slate-50 transition-colors ${p.cancelled_at ? 'opacity-40' : ''}`}
+                onClick={() => p.case_id && openGroup(p.group_id || p.case_id)}
+                className={`hover:bg-slate-50 transition-colors ${p.case_id ? 'cursor-pointer' : ''} ${p.cancelled_at ? 'opacity-40' : ''}`}
               >
                 <td className="px-5 py-3 font-bold text-[#1a61a6]">{p.case_ref}</td>
                 <td className="px-5 py-3 text-slate-700">{p.borrower}</td>

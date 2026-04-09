@@ -28,7 +28,7 @@ function formatEur(n: number) {
 }
 
 export default function GroupViewScreen() {
-  const { cases, currentGroupId, navigate, blockPhone, refreshCases } = useCrm();
+  const { cases, currentGroupId, previousView, navigate, blockPhone, refreshCases } = useCrm();
   const [activeTab, setActiveTab] = useState<TabKey>('resumen');
 
   const groupCases = useMemo(
@@ -130,7 +130,7 @@ export default function GroupViewScreen() {
         <div className="flex items-center gap-6">
           {/* Back button */}
           <button
-            onClick={() => navigate('call_queue')}
+            onClick={() => navigate(previousView || 'dashboard')}
             className="flex items-center gap-1.5 text-white/70 hover:text-white transition-colors"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

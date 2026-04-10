@@ -14,56 +14,56 @@ export default function Sidebar() {
   const { user, signOut } = useAuth();
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-60 bg-[#002446] text-white flex flex-col z-40 shadow-xl">
+    <aside className="fixed left-0 top-0 h-full w-48 bg-[#002446] text-white flex flex-col z-40 shadow-xl">
       {/* Brand */}
-      <div className="px-5 py-5 flex items-center gap-3">
-        <div className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center shrink-0">
-          <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <div className="px-4 py-4 flex items-center gap-2.5">
+        <div className="w-7 h-7 bg-white/10 rounded-md flex items-center justify-center shrink-0">
+          <svg className="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
           </svg>
         </div>
         <div>
-          <p className="text-sm font-black tracking-tight text-white uppercase leading-none">Recovery</p>
-          <p className="text-[9px] text-blue-400 font-bold tracking-widest uppercase">CRM</p>
+          <p className="text-[11px] font-black tracking-tight text-white uppercase leading-none">Recovery</p>
+          <p className="text-[8px] text-blue-400 font-bold tracking-widest uppercase">CRM</p>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 mt-2 space-y-0.5 px-2">
+      <nav className="flex-1 mt-1 space-y-0.5 px-2">
         {NAV_ITEMS.map((item) => {
           const isActive = currentView === item.key;
           return (
             <button
               key={item.key}
               onClick={() => navigate(item.key)}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-all ${
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left transition-all ${
                 isActive
                   ? 'bg-white/15 text-white font-bold border-l-2 border-blue-400'
                   : 'text-slate-300 hover:text-white hover:bg-white/5'
               }`}
             >
-              <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={isActive ? 2 : 1.5}>
+              <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={isActive ? 2 : 1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
               </svg>
-              <span className="text-xs">{item.label}</span>
+              <span className="text-[11px] leading-tight">{item.label}</span>
             </button>
           );
         })}
       </nav>
 
       {/* User + Logout */}
-      <div className="px-3 pb-4 space-y-1">
-        <div className="px-4 py-2 text-xs text-slate-400 truncate">
+      <div className="px-2 pb-4 space-y-1">
+        <div className="px-3 py-2 text-[10px] text-slate-400 truncate">
           {user?.full_name ?? user?.email}
         </div>
         <button
           onClick={signOut}
-          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-red-300 hover:text-white hover:bg-red-500/20 transition-all text-left"
+          className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-red-300 hover:text-white hover:bg-red-500/20 transition-all text-left"
         >
-          <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
-          <span className="text-xs">Cerrar Sesion</span>
+          <span className="text-[11px]">Cerrar Sesion</span>
         </button>
       </div>
     </aside>

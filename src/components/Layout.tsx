@@ -16,7 +16,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-[#f7f9fb]">
       <Sidebar />
-      <div className="ml-60 flex flex-col min-h-screen">
+      <div className="ml-48 flex flex-col min-h-screen">
         <TopBar />
         <main className="flex-1 overflow-hidden">{children}</main>
       </div>

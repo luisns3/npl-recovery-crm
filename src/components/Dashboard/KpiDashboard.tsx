@@ -87,19 +87,16 @@ export default function KpiDashboard() {
         {/* Pipeline Summary Cards */}
         <PipelineSummary proposals={filteredProposals} />
 
-        {/* Charts Row */}
-        <div className="grid grid-cols-12 gap-6">
-          <div className="col-span-7">
-            <CollectionsChart
-              proposals={filteredProposals}
-              selectedMonth={filters.selectedMonth}
-              onMonthClick={handleMonthClick}
-            />
-          </div>
-          <div className="col-span-5">
-            <PipelineCreationChart proposals={filteredProposals} />
-          </div>
-        </div>
+        {/* Collections Chart — full width */}
+        <CollectionsChart
+          proposals={filteredProposals}
+          allProposals={allProposals}
+          selectedMonth={filters.selectedMonth}
+          onMonthClick={handleMonthClick}
+        />
+
+        {/* Pipeline Creation Chart — full width below */}
+        <PipelineCreationChart proposals={filteredProposals} />
 
         {/* Proposal Table */}
         <ProposalTable proposals={filteredProposals} />

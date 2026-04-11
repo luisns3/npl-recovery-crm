@@ -1,4 +1,5 @@
 import type { Case, InsolvencyProceeding } from '../../../types';
+import { getMilestoneCategory, MILESTONE_STYLES } from '../../shared/legalMilestone';
 
 interface Props {
   groupCases: Case[];
@@ -92,7 +93,13 @@ export default function LegalTab({ groupCases, allLoans, allCollaterals }: Props
                       )}
                     </td>
                     <td className="px-4 py-3 text-[10px] text-slate-600">{parentCase?.legal_procedure_type || '—'}</td>
-                    <td className="px-4 py-3 text-[10px] text-slate-600">{parentCase?.legal_milestone || '—'}</td>
+                    <td className="px-4 py-3">
+                      {parentCase?.legal_milestone ? (
+                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${MILESTONE_STYLES[getMilestoneCategory(parentCase.legal_status, parentCase.legal_milestone)].badge}`}>
+                          {parentCase.legal_milestone}
+                        </span>
+                      ) : <span className="text-slate-300">—</span>}
+                    </td>
                     <td className="px-4 py-3 text-[10px] text-slate-600">{parentCase?.legal_milestone_date || '—'}</td>
                     <td className="px-4 py-3">
                       {parentCase?.auction_date ? (

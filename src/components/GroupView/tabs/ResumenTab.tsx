@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Case, Strategy, AdditionalDebt } from '../../../types';
 import { STRATEGY_LABELS, STRATEGY_PRIORITY } from '../../../types';
 import CadastralRefLink from '../../shared/CadastralRefLink';
+import { getMilestoneCategory, MILESTONE_STYLES } from '../../shared/legalMilestone';
 
 interface Props {
   groupCases: Case[];
@@ -135,24 +136,25 @@ export default function ResumenTab({ groupCases, allCollaterals, allLoans, allLo
                       );
                     })}
                     <td className="px-4 py-3 text-center border-l border-slate-50">
-                      {parentCase?.legal_status === 'judicial' ? (
-                        <div className="flex flex-col items-center gap-0.5">
-                          {parentCase.legal_milestone && (
-                            <span className="bg-blue-50 text-blue-700 text-[8px] font-bold px-1.5 py-0.5 rounded leading-tight">
-                              {parentCase.legal_milestone}
+                      {(() => {
+                        const cat = getMilestoneCategory(parentCase?.legal_status, parentCase?.legal_milestone);
+                        const styles = MILESTONE_STYLES[cat];
+                        if (cat === 'none') return <span className="text-slate-300">—</span>;
+                        return (
+                          <div className="flex flex-col items-center gap-1">
+                            <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded leading-tight ${styles.badge}`}>
+                              {parentCase?.legal_milestone || 'Judicial'}
                             </span>
-                          )}
-                          {parentCase.auction_date ? (
-                            <span className="text-[8px] font-bold text-red-600">
-                              {monthsToAuction(parentCase.auction_date)}m
-                            </span>
-                          ) : (
-                            <span className="text-[8px] text-slate-400">sin fecha</span>
-                          )}
-                        </div>
-                      ) : (
-                        <span className="text-slate-300">—</span>
-                      )}
+                            {parentCase?.auction_date ? (
+                              <span className={`text-[8px] font-bold ${cat === 'advanced' ? 'text-red-600' : 'text-slate-500'}`}>
+                                {monthsToAuction(parentCase.auction_date)}m subasta
+                              </span>
+                            ) : (
+                              <span className="text-[8px] text-slate-400">sin fecha</span>
+                            )}
+                          </div>
+                        );
+                      })()}
                     </td>
                     <td className="px-4 py-3 border-l border-slate-50">
                       {isEditing ? (

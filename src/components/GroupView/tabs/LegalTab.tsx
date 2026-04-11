@@ -136,7 +136,16 @@ export default function LegalTab({ groupCases, allLoans, allCollaterals }: Props
             <tbody className="divide-y divide-slate-50 text-xs">
               {allCollaterals.map((col) => (
                 <tr key={col.id} className="hover:bg-slate-50/60">
-                  <td className="px-4 py-3 font-medium text-slate-800 text-[11px]">{col.address}</td>
+                  <td className="px-4 py-3 text-[11px]">
+                    <a
+                      href={`https://maps.google.com/?q=${encodeURIComponent(col.address)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-medium text-slate-800 hover:text-[#1a61a6] hover:underline"
+                    >
+                      {col.address}
+                    </a>
+                  </td>
                   <td className="px-4 py-3 text-[10px] text-slate-500">{col.property_type}</td>
                   <td className="px-4 py-3">
                     {col.procedimiento_id ? (

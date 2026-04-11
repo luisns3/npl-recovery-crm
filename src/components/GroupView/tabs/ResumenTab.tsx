@@ -5,7 +5,7 @@ import CadastralRefLink from '../../shared/CadastralRefLink';
 
 interface Props {
   groupCases: Case[];
-  allCollaterals: { id: string; property_type: string; address: string; cadastral_ref: string | null; surface_sqm: number | null; procedimiento_id?: string | null }[];
+  allCollaterals: { id: string; property_type: string; address: string; cadastral_ref: string | null; surface_sqm: number | null; procedimiento_id?: string | null; latitude?: number | null; longitude?: number | null }[];
   allLoans: { id: string; case_id: string; loan_reference: string; upb: number; total_debt: number; strategy: Strategy; procedimiento_id?: string | null }[];
   allLoanCollaterals: { loan_id: string; collateral_id: string; lien_rank: number }[];
   onStrategyChange: (caseId: string, loanId: string, strategy: Strategy) => void;
@@ -87,7 +87,17 @@ export default function ResumenTab({ groupCases, allCollaterals, allLoans, allLo
                 return (
                   <tr key={col.id} className="hover:bg-slate-50/60 transition-colors">
                     <td className="px-4 py-3">
-                      <div className="font-bold text-slate-800 leading-tight">{col.address}</div>
+                      <a
+                        href={col.latitude && col.longitude
+                          ? `https://maps.google.com/?q=${col.latitude},${col.longitude}`
+                          : `https://maps.google.com/?q=${encodeURIComponent(col.address)}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-bold text-slate-800 leading-tight hover:text-[#1a61a6] hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {col.address}
+                      </a>
                       <div className="text-[9px] text-slate-400 mt-0.5">
                         {col.property_type}{col.surface_sqm ? ` · ${col.surface_sqm} m²` : ''}
                       </div>

@@ -54,7 +54,17 @@ export default function CollateralMatrix({ c }: Props) {
               return (
                 <tr key={col.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                   <td className="p-3">
-                    <div className="font-bold text-slate-800 leading-tight">{col.address}</div>
+                    <a
+                      href={col.latitude && col.longitude
+                        ? `https://maps.google.com/?q=${col.latitude},${col.longitude}`
+                        : `https://maps.google.com/?q=${encodeURIComponent(col.address)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-bold text-slate-800 leading-tight hover:text-[#1a61a6] hover:underline"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {col.address}
+                    </a>
                     <div className="text-[9px] text-slate-400 mb-1">
                       {col.property_type}{col.surface_sqm ? ` - ${col.surface_sqm} m\u00B2` : ''}
                     </div>

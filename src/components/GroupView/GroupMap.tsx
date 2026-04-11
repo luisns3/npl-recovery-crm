@@ -81,7 +81,14 @@ export default function GroupMap({ collaterals }: Props) {
           >
             <Popup>
               <div className="text-xs">
-                <p className="font-bold text-[#002446]">{col.address}</p>
+                <a
+                  href={`https://maps.google.com/?q=${col.latitude},${col.longitude}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-bold text-[#002446] hover:text-[#1a61a6] hover:underline"
+                >
+                  {col.address}
+                </a>
                 <p className="text-slate-500">{col.property_type}{col.surface_sqm ? ` · ${col.surface_sqm} m²` : ''}</p>
                 <p className="mt-1 text-slate-600">{OCCUPANCY_LABELS[col.occupancy_status] || col.occupancy_status}</p>
                 {col.cadastral_ref && (

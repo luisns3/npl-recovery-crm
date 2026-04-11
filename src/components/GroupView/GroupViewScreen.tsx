@@ -5,20 +5,22 @@ import { STRATEGY_LABELS } from '../../types';
 import GroupMap from './GroupMap';
 import ResumenTab from './tabs/ResumenTab';
 import ParticipantesTab from './tabs/ParticipantesTab';
-import LegalTab from './tabs/LegalTab';
 import PropuestasTab from './tabs/PropuestasTab';
 import ActividadTab from './tabs/ActividadTab';
+import DeudaTab from './tabs/DeudaTab';
 import DocumentosTab from './tabs/DocumentosTab';
+import ConciliacionTab from './tabs/ConciliacionTab';
 
-type TabKey = 'resumen' | 'participantes' | 'legal' | 'propuestas' | 'actividad' | 'documentos';
+type TabKey = 'resumen' | 'participantes' | 'actividad' | 'propuestas' | 'deuda' | 'documentos' | 'conciliacion';
 
 const TABS: { key: TabKey; label: string }[] = [
-  { key: 'resumen', label: 'Resumen' },
+  { key: 'resumen',       label: 'Resumen' },
   { key: 'participantes', label: 'Participantes' },
-  { key: 'legal', label: 'Legal' },
-  { key: 'propuestas', label: 'Propuestas' },
-  { key: 'actividad', label: 'Actividad' },
-  { key: 'documentos', label: 'Documentos' },
+  { key: 'actividad',     label: 'Actividad' },
+  { key: 'propuestas',    label: 'Propuestas' },
+  { key: 'deuda',         label: 'Deuda' },
+  { key: 'documentos',    label: 'Documentos' },
+  { key: 'conciliacion',  label: 'Conciliación Bancaria' },
 ];
 
 function formatEur(n: number) {
@@ -77,6 +79,7 @@ export default function GroupViewScreen() {
   const allProposals = useMemo(() => groupCases.flatMap((c) => c.proposals), [groupCases]);
   const allAlerts = useMemo(() => groupCases.flatMap((c) => c.alerts), [groupCases]);
   const allDocumentRequests = useMemo(() => groupCases.flatMap((c) => c.document_requests || []), [groupCases]);
+  const allBankMovements = useMemo(() => groupCases.flatMap((c) => c.bank_movements || []), [groupCases]);
 
   // Mock affordabilities until DB is wired
   const allAffordabilities: Affordability[] = [];
@@ -116,11 +119,14 @@ export default function GroupViewScreen() {
     await refreshCases();
   }
 
+  const pendingMovements = allBankMovements.filter((m) => m.status === 'pending');
+
   const tabAlertCounts: Partial<Record<TabKey, number>> = {
-    actividad: allInteractions.length,
-    propuestas: activeProposals.length,
-    legal: groupCases.filter((c) => c.legal_status === 'judicial').length,
-    documentos: allDocumentRequests.filter((d) => d.status === 'pending').length,
+    actividad:     allInteractions.length,
+    propuestas:    activeProposals.length,
+    deuda:         allLoans.length,
+    documentos:    allDocumentRequests.filter((d) => d.status === 'pending').length,
+    conciliacion:  pendingMovements.length,
   };
 
   return (
@@ -316,24 +322,29 @@ export default function GroupViewScreen() {
             }}
           />
         )}
-        {activeTab === 'legal' && (
-          <LegalTab
-            groupCases={groupCases}
-            allLoans={allLoans}
-            allCollaterals={allCollaterals}
-          />
-        )}
-        {activeTab === 'propuestas' && (
-          <PropuestasTab allProposals={allProposals} />
-        )}
         {activeTab === 'actividad' && (
           <ActividadTab
             allInteractions={allInteractions}
             onAddNote={handleAddNote}
           />
         )}
+        {activeTab === 'propuestas' && (
+          <PropuestasTab allProposals={allProposals} />
+        )}
+        {activeTab === 'deuda' && (
+          <DeudaTab allLoans={allLoans} groupCases={groupCases} />
+        )}
         {activeTab === 'documentos' && (
           <DocumentosTab documentRequests={allDocumentRequests} />
+        )}
+        {activeTab === 'conciliacion' && (
+          <ConciliacionTab
+            allMovements={allBankMovements}
+            allLoans={allLoans}
+            allProposals={allProposals}
+            onReconcile={async (_movId, _type, _linkId) => { await refreshCases(); }}
+            onExclude={async (_movId) => { await refreshCases(); }}
+          />
         )}
       </div>
     </div>

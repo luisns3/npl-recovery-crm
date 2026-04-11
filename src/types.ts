@@ -95,6 +95,29 @@ export interface Loan {
   total_debt: number;
   strategy: Strategy;
   procedimiento_id?: string | null;
+  // Financial detail fields
+  original_balance?: number | null;
+  unpaid_instalments?: number | null;
+  ordinary_interest?: number | null;
+  default_interest?: number | null;
+  costas_gastos?: number | null;
+  last_payment_date?: string | null;
+  last_payment_amount?: number | null;
+}
+
+export interface BankMovement {
+  id: string;
+  case_id: string;
+  date: string;
+  description: string;
+  amount: number; // positive = credit (income), negative = debit
+  reference?: string | null;
+  status: 'pending' | 'reconciled' | 'excluded';
+  linked_loan_id?: string | null;
+  linked_proposal_id?: string | null;
+  reconciled_by?: string | null;
+  reconciled_at?: string | null;
+  notes?: string | null;
 }
 
 export interface InsolvencyProceeding {
@@ -285,6 +308,7 @@ export interface Case {
   additional_debts?: AdditionalDebt[];
   document_requests?: DocumentRequest[];
   skiptrace_requests?: SkiptraceRequest[];
+  bank_movements?: BankMovement[];
 }
 
 export type ViewMode =

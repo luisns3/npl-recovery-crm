@@ -16,8 +16,8 @@ export default function CadastralRefLink({ refCat, label, className }: Props) {
     e.preventDefault();
     navigator.clipboard.writeText(refCat);
     setCopied(true);
+    setTimeout(() => window.open(CATASTRO_SEARCH, '_blank', 'noreferrer'), 1000);
     setTimeout(() => setCopied(false), 2500);
-    window.open(CATASTRO_SEARCH, '_blank', 'noreferrer');
   }
 
   return (

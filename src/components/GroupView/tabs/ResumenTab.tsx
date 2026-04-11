@@ -4,8 +4,8 @@ import { STRATEGY_LABELS, STRATEGY_PRIORITY } from '../../../types';
 
 interface Props {
   groupCases: Case[];
-  allCollaterals: { id: string; property_type: string; address: string; cadastral_ref: string | null; surface_sqm: number | null; procedura_id?: string | null }[];
-  allLoans: { id: string; case_id: string; loan_reference: string; upb: number; total_debt: number; strategy: Strategy; procedura_id?: string | null }[];
+  allCollaterals: { id: string; property_type: string; address: string; cadastral_ref: string | null; surface_sqm: number | null; procedimiento_id?: string | null }[];
+  allLoans: { id: string; case_id: string; loan_reference: string; upb: number; total_debt: number; strategy: Strategy; procedimiento_id?: string | null }[];
   allLoanCollaterals: { loan_id: string; collateral_id: string; lien_rank: number }[];
   onStrategyChange: (caseId: string, loanId: string, strategy: Strategy) => void;
 }
@@ -62,9 +62,9 @@ export default function ResumenTab({ groupCases, allCollaterals, allLoans, allLo
                     <div className="text-[8px] normal-case font-medium text-slate-500 mt-0.5">
                       {formatEur(loan.upb)} / {formatEur(loan.total_debt)} EUR
                     </div>
-                    {loan.procedura_id && (
+                    {loan.procedimiento_id && (
                       <div className="text-[8px] normal-case text-amber-600 font-bold mt-0.5 bg-amber-50 rounded px-1">
-                        Proc. {loan.procedura_id}
+                        Proc. {loan.procedimiento_id}
                       </div>
                     )}
                   </th>
@@ -93,8 +93,8 @@ export default function ResumenTab({ groupCases, allCollaterals, allLoans, allLo
                       {col.cadastral_ref && (
                         <div className="text-[8px] text-slate-400 mt-0.5">Ref. cat.: {col.cadastral_ref}</div>
                       )}
-                      {col.procedura_id && (
-                        <div className="text-[8px] text-amber-600 font-bold mt-0.5">Proc. {col.procedura_id}</div>
+                      {col.procedimiento_id && (
+                        <div className="text-[8px] text-amber-600 font-bold mt-0.5">Proc. {col.procedimiento_id}</div>
                       )}
                     </td>
                     {allLoans.map((loan) => {

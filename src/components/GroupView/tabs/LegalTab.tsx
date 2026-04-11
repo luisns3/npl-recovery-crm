@@ -2,8 +2,8 @@ import type { Case, InsolvencyProceeding } from '../../../types';
 
 interface Props {
   groupCases: Case[];
-  allLoans: { id: string; case_id: string; loan_reference: string; strategy: unknown; upb: number; total_debt: number; procedura_id?: string | null }[];
-  allCollaterals: { id: string; address: string; property_type: string; occupancy_status: string; procedura_id?: string | null }[];
+  allLoans: { id: string; case_id: string; loan_reference: string; strategy: unknown; upb: number; total_debt: number; procedimiento_id?: string | null }[];
+  allCollaterals: { id: string; address: string; property_type: string; occupancy_status: string; procedimiento_id?: string | null }[];
 }
 
 const OCCUPANCY_LABELS: Record<string, string> = {
@@ -61,7 +61,7 @@ export default function LegalTab({ groupCases, allLoans, allCollaterals }: Props
             <thead className="bg-slate-50 text-[9px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200">
               <tr>
                 <th className="px-4 py-3">Prestamo</th>
-                <th className="px-4 py-3">ID Procedura</th>
+                <th className="px-4 py-3">ID Procedimiento</th>
                 <th className="px-4 py-3">Estado Legal</th>
                 <th className="px-4 py-3">Tipo Procedimiento</th>
                 <th className="px-4 py-3">Hito Legal</th>
@@ -76,8 +76,8 @@ export default function LegalTab({ groupCases, allLoans, allCollaterals }: Props
                   <tr key={loan.id} className="hover:bg-slate-50/60">
                     <td className="px-4 py-3 font-bold text-[#1a61a6]">{loan.loan_reference}</td>
                     <td className="px-4 py-3">
-                      {loan.procedura_id ? (
-                        <span className="bg-amber-50 text-amber-700 font-bold text-[10px] px-2 py-0.5 rounded">{loan.procedura_id}</span>
+                      {loan.procedimiento_id ? (
+                        <span className="bg-amber-50 text-amber-700 font-bold text-[10px] px-2 py-0.5 rounded">{loan.procedimiento_id}</span>
                       ) : (
                         <span className="text-slate-300">—</span>
                       )}
@@ -129,7 +129,7 @@ export default function LegalTab({ groupCases, allLoans, allCollaterals }: Props
               <tr>
                 <th className="px-4 py-3">Garantia</th>
                 <th className="px-4 py-3">Tipo</th>
-                <th className="px-4 py-3">ID Procedura</th>
+                <th className="px-4 py-3">ID Procedimiento</th>
                 <th className="px-4 py-3">Ocupacion</th>
               </tr>
             </thead>
@@ -139,8 +139,8 @@ export default function LegalTab({ groupCases, allLoans, allCollaterals }: Props
                   <td className="px-4 py-3 font-medium text-slate-800 text-[11px]">{col.address}</td>
                   <td className="px-4 py-3 text-[10px] text-slate-500">{col.property_type}</td>
                   <td className="px-4 py-3">
-                    {col.procedura_id ? (
-                      <span className="bg-amber-50 text-amber-700 font-bold text-[10px] px-2 py-0.5 rounded">{col.procedura_id}</span>
+                    {col.procedimiento_id ? (
+                      <span className="bg-amber-50 text-amber-700 font-bold text-[10px] px-2 py-0.5 rounded">{col.procedimiento_id}</span>
                     ) : (
                       <span className="text-slate-300">—</span>
                     )}

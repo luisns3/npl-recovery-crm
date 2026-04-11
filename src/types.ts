@@ -94,7 +94,7 @@ export interface Loan {
   accrued_interest: number;
   total_debt: number;
   strategy: Strategy;
-  procedura_id?: string | null;
+  procedimiento_id?: string | null;
 }
 
 export interface InsolvencyProceeding {
@@ -141,7 +141,7 @@ export interface Collateral {
   occupancy_status: OccupancyStatus;
   latitude: number | null;
   longitude: number | null;
-  procedura_id?: string | null;
+  procedimiento_id?: string | null;
 }
 
 export interface LoanCollateral {

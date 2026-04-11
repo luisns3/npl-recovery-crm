@@ -419,7 +419,7 @@ export default function ResumenTab({ groupCases, allCollaterals, allLoans, allLo
 
       {/* ── Flag Modal ───────────────────────────────────────────────────────── */}
       {flagModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setFlagModal(null)}>
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setFlagModal(null)}>
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
 
             {/* Header */}

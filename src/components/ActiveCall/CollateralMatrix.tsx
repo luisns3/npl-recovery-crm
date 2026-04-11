@@ -1,5 +1,6 @@
 import type { Case } from '../../types';
 import { STRATEGY_LABELS } from '../../types';
+import CadastralRefLink from '../shared/CadastralRefLink';
 
 interface Props {
   c: Case;
@@ -58,15 +59,11 @@ export default function CollateralMatrix({ c }: Props) {
                       {col.property_type}{col.surface_sqm ? ` - ${col.surface_sqm} m\u00B2` : ''}
                     </div>
                     {col.cadastral_ref && (
-                      <a
-                        href={`https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?refcat=${col.cadastral_ref}&final=&ZV=NO&anyoZV=`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-[8px] text-[#1a61a6] hover:underline"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        Ref: {col.cadastral_ref}
-                      </a>
+                      <CadastralRefLink
+                        refCat={col.cadastral_ref}
+                        label={`Ref: ${col.cadastral_ref}`}
+                        className="text-[8px] text-[#1a61a6] hover:underline cursor-pointer"
+                      />
                     )}
                   </td>
                   {loans.map((loan) => {

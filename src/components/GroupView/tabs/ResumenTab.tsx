@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Case, Strategy, AdditionalDebt } from '../../../types';
 import { STRATEGY_LABELS, STRATEGY_PRIORITY } from '../../../types';
+import CadastralRefLink from '../../shared/CadastralRefLink';
 
 interface Props {
   groupCases: Case[];
@@ -91,15 +92,10 @@ export default function ResumenTab({ groupCases, allCollaterals, allLoans, allLo
                         {col.property_type}{col.surface_sqm ? ` · ${col.surface_sqm} m²` : ''}
                       </div>
                       {col.cadastral_ref && (
-                        <a
-                          href={`https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?refcat=${col.cadastral_ref}&final=&ZV=NO&anyoZV=`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-[8px] text-[#1a61a6] hover:underline mt-0.5 block"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          Ref. cat.: {col.cadastral_ref}
-                        </a>
+                        <CadastralRefLink
+                          refCat={col.cadastral_ref}
+                          className="text-[8px] text-[#1a61a6] hover:underline mt-0.5 block cursor-pointer"
+                        />
                       )}
                       {col.procedimiento_id && (
                         <div className="text-[8px] text-amber-600 font-bold mt-0.5">Proc. {col.procedimiento_id}</div>

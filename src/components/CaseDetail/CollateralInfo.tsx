@@ -1,4 +1,5 @@
 import type { Collateral } from '../../types';
+import CadastralRefLink from '../shared/CadastralRefLink';
 
 export default function CollateralInfo({ collaterals }: { collaterals: Collateral[] }) {
   return (
@@ -16,15 +17,7 @@ export default function CollateralInfo({ collaterals }: { collaterals: Collatera
               {col.surface_sqm && <span>{col.surface_sqm} m2</span>}
               {col.plot_registry && <span>{col.plot_registry}</span>}
               {col.cadastral_ref && (
-                <a
-                  href={`https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?refcat=${col.cadastral_ref}&final=&ZV=NO&anyoZV=`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hover:underline text-[#1a61a6]"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  Ref: {col.cadastral_ref}
-                </a>
+                <CadastralRefLink refCat={col.cadastral_ref} label={`Ref: ${col.cadastral_ref}`} />
               )}
               {col.latitude && col.longitude && (
                 <a

@@ -110,12 +110,11 @@ export default function GroupTimelineChart({ allInteractions, allProposals }: Pr
 
   const maxAmt = useMemo(() => Math.max(1, ...Object.values(propByWeek)), [propByWeek]);
 
-  // Auto-scroll to centre current week on mount
+  // Scroll all the way to the right on mount (current week is last column)
   const currentIdx = weeks.indexOf(currentSunday);
   useEffect(() => {
-    if (!scrollRef.current || currentIdx < 0) return;
-    const cw = scrollRef.current.clientWidth;
-    scrollRef.current.scrollLeft = Math.max(0, currentIdx * COL_W - cw / 2 + COL_W / 2);
+    if (!scrollRef.current) return;
+    scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
   }, [currentIdx]);
 
   const totalW = weeks.length * COL_W;

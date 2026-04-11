@@ -36,6 +36,12 @@ export default function ResumenTab({ groupCases, allCollaterals, allLoans, allLo
     return loan?.strategy || groupCases[0]?.strategy || 'DPO';
   }
 
+  function monthsToAuction(auctionDate: string): number {
+    const today = new Date();
+    const auction = new Date(auctionDate);
+    return Math.max(0, (auction.getFullYear() - today.getFullYear()) * 12 + (auction.getMonth() - today.getMonth()));
+  }
+
   function formatEur(n: number) {
     return n.toLocaleString('es-ES', { maximumFractionDigits: 0 });
   }
@@ -70,7 +76,10 @@ export default function ResumenTab({ groupCases, allCollaterals, allLoans, allLo
                     )}
                   </th>
                 ))}
-                <th className="px-4 py-3 text-center border-l border-slate-200 min-w-[80px]">Ocupacion</th>
+                <th className="px-4 py-3 text-center border-l border-slate-200 min-w-[110px]">
+                  Fase Jud.
+                  <div className="text-[7px] normal-case font-medium text-slate-400 mt-0.5">(meses para subasta)</div>
+                </th>
                 <th className="px-4 py-3 border-l border-slate-200 min-w-[140px]">Estrategia</th>
               </tr>
             </thead>
@@ -126,16 +135,23 @@ export default function ResumenTab({ groupCases, allCollaterals, allLoans, allLo
                       );
                     })}
                     <td className="px-4 py-3 text-center border-l border-slate-50">
-                      {parentCase && (
-                        <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase ${
-                          parentCase.legal_status === 'judicial'
-                            ? 'bg-blue-100 text-blue-700'
-                            : 'bg-slate-100 text-slate-600'
-                        }`}>
-                          {parentCase.legal_status === 'judicial'
-                            ? (parentCase.legal_procedure_type || 'Judicial')
-                            : 'Extrajud.'}
-                        </span>
+                      {parentCase?.legal_status === 'judicial' ? (
+                        <div className="flex flex-col items-center gap-0.5">
+                          {parentCase.legal_milestone && (
+                            <span className="bg-blue-50 text-blue-700 text-[8px] font-bold px-1.5 py-0.5 rounded leading-tight">
+                              {parentCase.legal_milestone}
+                            </span>
+                          )}
+                          {parentCase.auction_date ? (
+                            <span className="text-[8px] font-bold text-red-600">
+                              {monthsToAuction(parentCase.auction_date)}m
+                            </span>
+                          ) : (
+                            <span className="text-[8px] text-slate-400">sin fecha</span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-slate-300">—</span>
                       )}
                     </td>
                     <td className="px-4 py-3 border-l border-slate-50">

@@ -8,10 +8,11 @@ import ParticipantesTab from './tabs/ParticipantesTab';
 import PropuestasTab from './tabs/PropuestasTab';
 import ActividadTab from './tabs/ActividadTab';
 import DeudaTab from './tabs/DeudaTab';
+import LegalTab from './tabs/LegalTab';
 import DocumentosTab from './tabs/DocumentosTab';
 import ConciliacionTab from './tabs/ConciliacionTab';
 
-type TabKey = 'resumen' | 'participantes' | 'actividad' | 'propuestas' | 'deuda' | 'documentos' | 'conciliacion';
+type TabKey = 'resumen' | 'participantes' | 'actividad' | 'propuestas' | 'deuda' | 'legal' | 'documentos' | 'conciliacion';
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'resumen',       label: 'Resumen' },
@@ -19,6 +20,7 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: 'actividad',     label: 'Actividad' },
   { key: 'propuestas',    label: 'Propuestas' },
   { key: 'deuda',         label: 'Deuda' },
+  { key: 'legal',         label: 'Legal' },
   { key: 'documentos',    label: 'Documentos' },
   { key: 'conciliacion',  label: 'Conciliación Bancaria' },
 ];
@@ -125,6 +127,7 @@ export default function GroupViewScreen() {
     actividad:     allInteractions.length,
     propuestas:    activeProposals.length,
     deuda:         allLoans.length,
+    legal:         groupCases.filter((c) => c.legal_status === 'judicial').length,
     documentos:    allDocumentRequests.filter((d) => d.status === 'pending').length,
     conciliacion:  pendingMovements.length,
   };
@@ -333,6 +336,13 @@ export default function GroupViewScreen() {
         )}
         {activeTab === 'deuda' && (
           <DeudaTab allLoans={allLoans} groupCases={groupCases} />
+        )}
+        {activeTab === 'legal' && (
+          <LegalTab
+            groupCases={groupCases}
+            allLoans={allLoans}
+            allCollaterals={allCollaterals}
+          />
         )}
         {activeTab === 'documentos' && (
           <DocumentosTab documentRequests={allDocumentRequests} />

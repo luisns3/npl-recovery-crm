@@ -1,8 +1,9 @@
 import { useState, useRef } from 'react';
-import type { Case, Strategy, AdditionalDebt } from '../../../types';
+import type { Case, Strategy, AdditionalDebt, Interaction, Proposal } from '../../../types';
 import { STRATEGY_LABELS, STRATEGY_PRIORITY } from '../../../types';
 import CadastralRefLink from '../../shared/CadastralRefLink';
 import { getMilestoneCategory, MILESTONE_STYLES } from '../../shared/legalMilestone';
+import GroupTimelineChart from '../GroupTimelineChart';
 
 interface Props {
   groupCases: Case[];
@@ -10,6 +11,8 @@ interface Props {
   allLoans: { id: string; case_id: string; loan_reference: string; upb: number; total_debt: number; strategy: Strategy; procedimiento_id?: string | null }[];
   allLoanCollaterals: { loan_id: string; collateral_id: string; lien_rank: number }[];
   onStrategyChange: (caseId: string, loanId: string, strategy: Strategy) => void;
+  allInteractions: Interaction[];
+  allProposals: Proposal[];
 }
 
 // ─── Flag reasons ────────────────────────────────────────────────────────────
@@ -49,7 +52,7 @@ function FlagIcon({ active }: { active: boolean }) {
   );
 }
 
-export default function ResumenTab({ groupCases, allCollaterals, allLoans, allLoanCollaterals, onStrategyChange }: Props) {
+export default function ResumenTab({ groupCases, allCollaterals, allLoans, allLoanCollaterals, onStrategyChange, allInteractions, allProposals }: Props) {
   const [editingStrategy, setEditingStrategy] = useState<string | null>(null);
   const [flags, setFlags] = useState<Record<string, FlagData>>({});
   const [flagModal, setFlagModal] = useState<{ id: string; label: string } | null>(null);
@@ -416,6 +419,9 @@ export default function ResumenTab({ groupCases, allCollaterals, allLoans, allLo
           </div>
         )}
       </div>
+
+      {/* ── Timeline Chart ──────────────────────────────────────────────────── */}
+      <GroupTimelineChart allInteractions={allInteractions} allProposals={allProposals} />
 
       {/* ── Flag Modal ───────────────────────────────────────────────────────── */}
       {flagModal && (

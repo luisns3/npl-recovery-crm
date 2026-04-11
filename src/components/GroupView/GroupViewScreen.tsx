@@ -308,6 +308,8 @@ export default function GroupViewScreen() {
             allLoans={allLoans}
             allLoanCollaterals={allLoanCollaterals}
             onStrategyChange={async (_caseId, _loanId, _strategy) => { await refreshCases(); }}
+            allInteractions={allInteractions}
+            allProposals={allProposals}
           />
         )}
         {activeTab === 'participantes' && (

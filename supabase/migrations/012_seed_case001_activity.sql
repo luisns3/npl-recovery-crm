@@ -1,6 +1,10 @@
 -- Migration 012: Dense activity history for EXP-2024-001 + more proposals
 -- Populates the timeline chart across the full 2-year window
 
+ALTER TABLE interactions DROP CONSTRAINT IF EXISTS interactions_created_by_fkey;
+ALTER TABLE proposals    DROP CONSTRAINT IF EXISTS proposals_created_by_fkey;
+ALTER TABLE proposals    DROP CONSTRAINT IF EXISTS proposals_cancelled_by_fkey;
+
 -- ─────────────────────────────────────────────────────────────────────────────
 -- Interactions for EXP-2024-001 (case e1000000-...001)
 -- All call result types represented; spread weekly Apr 2024 → Apr 2026

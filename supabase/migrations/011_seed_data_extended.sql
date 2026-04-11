@@ -3,6 +3,19 @@
 --         multi-loan/multi-collateral groups, zero-debt loans, various proposal stages
 
 -- ─────────────────────────────────────────────────────────────────────────────
+-- 0. Drop user FK constraints so placeholder UUID works for seeding
+-- ─────────────────────────────────────────────────────────────────────────────
+ALTER TABLE cases        DROP CONSTRAINT IF EXISTS cases_assigned_to_fkey;
+ALTER TABLE contacts     DROP CONSTRAINT IF EXISTS contacts_added_by_fkey;
+ALTER TABLE contacts     DROP CONSTRAINT IF EXISTS contacts_blocked_by_fkey;
+ALTER TABLE interactions DROP CONSTRAINT IF EXISTS interactions_created_by_fkey;
+ALTER TABLE alerts       DROP CONSTRAINT IF EXISTS alerts_created_by_fkey;
+ALTER TABLE alerts       DROP CONSTRAINT IF EXISTS alerts_resolved_by_fkey;
+ALTER TABLE proposals    DROP CONSTRAINT IF EXISTS proposals_created_by_fkey;
+ALTER TABLE proposals    DROP CONSTRAINT IF EXISTS proposals_cancelled_by_fkey;
+ALTER TABLE valuations   DROP CONSTRAINT IF EXISTS valuations_created_by_fkey;
+
+-- ─────────────────────────────────────────────────────────────────────────────
 -- 1. Add missing financial columns to loans
 -- ─────────────────────────────────────────────────────────────────────────────
 ALTER TABLE loans

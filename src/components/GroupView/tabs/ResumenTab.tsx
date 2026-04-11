@@ -14,19 +14,12 @@ interface Props {
 
 // ─── Flag reasons ────────────────────────────────────────────────────────────
 const FLAG_REASONS = [
-  'Documentación incompleta o incorrecta',
-  'Disputa de titularidad o dominio',
-  'Carga o gravamen preferente no identificado',
-  'Tasación desactualizada o incorrecta',
-  'Garantía insuficiente respecto al saldo deudor',
-  'Proceso concursal activo sobre el deudor',
-  'Ocupación conflictiva o ilegal',
+  'Colateral incorrecto o porcentaje de participación distinto',
   'Error en datos registrales o catastrales',
+  'Carga o gravamen preferente no identificado',
   'Daño estructural o deterioro grave',
-  'Afección urbanística o medioambiental',
   'Limitación VPO o protección patrimonial',
-  'Seguro de hogar impagado o vencido',
-  'Novación o subrogación no documentada',
+  'Problema urbanístico o medioambiental',
   'Otro (indicar en notas)',
 ] as const;
 

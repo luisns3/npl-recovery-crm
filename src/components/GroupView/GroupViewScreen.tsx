@@ -300,7 +300,7 @@ export default function GroupViewScreen() {
       </div>
 
       {/* TAB CONTENT */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
+      <div className="flex-1 overflow-y-auto custom-scrollbar pb-8">
         {activeTab === 'resumen' && (
           <ResumenTab
             groupCases={groupCases}

@@ -83,7 +83,16 @@ export default function GroupMap({ collaterals }: Props) {
                 <p className="font-bold text-[#002446]">{col.address}</p>
                 <p className="text-slate-500">{col.property_type}{col.surface_sqm ? ` · ${col.surface_sqm} m²` : ''}</p>
                 <p className="mt-1 text-slate-600">{OCCUPANCY_LABELS[col.occupancy_status] || col.occupancy_status}</p>
-                {col.cadastral_ref && <p className="text-[10px] text-slate-400 mt-1">Ref. cat.: {col.cadastral_ref}</p>}
+                {col.cadastral_ref && (
+                  <a
+                    href={`https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?refcat=${col.cadastral_ref}&final=&ZV=NO&anyoZV=`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[10px] text-[#1a61a6] hover:underline mt-1 block"
+                  >
+                    Ref. cat.: {col.cadastral_ref}
+                  </a>
+                )}
               </div>
             </Popup>
           </Marker>

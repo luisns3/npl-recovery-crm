@@ -15,7 +15,17 @@ export default function CollateralInfo({ collaterals }: { collaterals: Collatera
             <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
               {col.surface_sqm && <span>{col.surface_sqm} m2</span>}
               {col.plot_registry && <span>{col.plot_registry}</span>}
-              {col.cadastral_ref && <span>Ref: {col.cadastral_ref}</span>}
+              {col.cadastral_ref && (
+                <a
+                  href={`https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?refcat=${col.cadastral_ref}&final=&ZV=NO&anyoZV=`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:underline text-[#1a61a6]"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Ref: {col.cadastral_ref}
+                </a>
+              )}
               {col.latitude && col.longitude && (
                 <a
                   href={`https://maps.google.com/?q=${col.latitude},${col.longitude}`}

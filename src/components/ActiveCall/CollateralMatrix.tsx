@@ -58,7 +58,15 @@ export default function CollateralMatrix({ c }: Props) {
                       {col.property_type}{col.surface_sqm ? ` - ${col.surface_sqm} m\u00B2` : ''}
                     </div>
                     {col.cadastral_ref && (
-                      <div className="text-[8px] text-slate-400">Ref: {col.cadastral_ref}</div>
+                      <a
+                        href={`https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?refcat=${col.cadastral_ref}&final=&ZV=NO&anyoZV=`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[8px] text-[#1a61a6] hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Ref: {col.cadastral_ref}
+                      </a>
                     )}
                   </td>
                   {loans.map((loan) => {

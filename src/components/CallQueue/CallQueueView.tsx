@@ -28,16 +28,14 @@ function daysUntilAuction(c: Case): number | null {
 }
 
 export default function CallQueueView() {
-  const { cases, openCase, openGroup, startCalls } = useCrm();
+  const { cases, openGroup, startCalls } = useCrm();
 
   const groups = useMemo(() => {
     const groupMap = new Map<string, Case[]>();
     const nonResolved = cases.filter((c) => c.stage !== 'resolved');
 
     for (const c of nonResolved) {
-      const key = c.group_id || c.id; // ungrouped cases use their own ID
-      if (!groupMap.has(key)) groupMap.set(key, []);
-      groupMap.get(key)!.push(c);
+      groupMap.set(c.id, [c]);
     }
 
     const entries: GroupEntry[] = [...groupMap.entries()].map(([_key, groupCases]) => {
@@ -54,7 +52,7 @@ export default function CallQueueView() {
       const closestAuction = auctionDays.length > 0 ? Math.min(...auctionDays) : null;
 
       return {
-        groupId: primary.group_id,
+        groupId: primary.id,
         cases: groupCases,
         primaryBorrower: borrower,
         totalDebt,
@@ -124,8 +122,8 @@ export default function CallQueueView() {
               <tbody className="divide-y divide-slate-50">
                 {groups.map((g, idx) => (
                   <tr
-                    key={g.groupId || g.cases[0].id}
-                    onClick={() => openGroup(g.groupId || g.cases[0].id)}
+                    key={g.groupId}
+                    onClick={() => openGroup(g.groupId)}
                     className="hover:bg-slate-50 transition-colors cursor-pointer group"
                   >
                     <td className="px-5 py-4 text-xs text-slate-400 font-mono">{idx + 1}</td>

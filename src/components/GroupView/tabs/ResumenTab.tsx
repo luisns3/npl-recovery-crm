@@ -7,9 +7,9 @@ import GroupTimelineChart from '../GroupTimelineChart';
 
 interface Props {
   groupCases: Case[];
-  allCollaterals: { id: string; property_type: string; address: string; cadastral_ref: string | null; surface_sqm: number | null; procedimiento_id?: string | null; latitude?: number | null; longitude?: number | null }[];
+  allCollaterals: { id: string; property_type: string; address: string; cadastral_ref: string | null; surface_sqm: number | null; latitude?: number | null; longitude?: number | null }[];
   allLoans: { id: string; case_id: string; loan_reference: string; upb: number; total_debt: number; strategy: Strategy; procedimiento_id?: string | null }[];
-  allLoanCollaterals: { loan_id: string; collateral_id: string; lien_rank: number }[];
+  allLoanCollaterals: { loan_id: string; collateral_id: string; lien_rank: number; is_enforced?: boolean }[];
   onStrategyChange: (caseId: string, loanId: string, strategy: Strategy) => void;
   allInteractions: Interaction[];
   allProposals: Proposal[];
@@ -231,9 +231,9 @@ export default function ResumenTab({ groupCases, allCollaterals, allLoans, allLo
                           className={`text-[8px] hover:underline mt-0.5 block cursor-pointer ${rowReleased ? 'line-through text-slate-400' : 'text-[#1a61a6]'}`}
                         />
                       )}
-                      {col.procedimiento_id && (
-                        <div className={`text-[8px] font-bold mt-0.5 ${rowReleased ? 'line-through text-slate-400' : 'text-amber-600'}`}>
-                          Proc. {col.procedimiento_id}
+                      {allLoanCollaterals.some(r => r.collateral_id === col.id && r.is_enforced) && (
+                        <div className={`text-[8px] font-bold mt-0.5 ${rowReleased ? 'line-through text-slate-400' : 'text-red-600'}`}>
+                          EN EJECUCIÓN
                         </div>
                       )}
                       {/* Flag button */}
@@ -255,12 +255,18 @@ export default function ResumenTab({ groupCases, allCollaterals, allLoans, allLo
                       const colZero = zeroDebtLoanIds.has(loan.id);
                       const cellBg = !rowFlagged && colFlagged ? 'bg-red-50' : '';
                       const cellStrike = (rowReleased || colZero) ? strikeCls || 'line-through text-slate-400' : '';
+                      const isEnforced = allLoanCollaterals.some(r => r.loan_id === loan.id && r.collateral_id === col.id && r.is_enforced);
                       return (
                         <td key={loan.id} className={`px-4 py-3 text-center border-l border-slate-50 ${cellBg}`}>
                           {rank !== null ? (
-                            <span className={`bg-[#1a61a6]/10 text-[#1a61a6] px-2 py-0.5 rounded font-bold text-[10px] ${cellStrike}`}>
-                              {rank}ª
-                            </span>
+                            <div className="flex flex-col items-center gap-0.5">
+                              <span className={`bg-[#1a61a6]/10 text-[#1a61a6] px-2 py-0.5 rounded font-bold text-[10px] ${cellStrike}`}>
+                                {rank}ª
+                              </span>
+                              {isEnforced && (
+                                <span className="text-[7px] font-bold text-red-600 bg-red-50 px-1 py-px rounded leading-tight">EJEC.</span>
+                              )}
+                            </div>
                           ) : (
                             <span className="text-slate-300">—</span>
                           )}

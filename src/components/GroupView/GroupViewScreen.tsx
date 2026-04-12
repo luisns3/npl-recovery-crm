@@ -36,7 +36,7 @@ export default function GroupViewScreen() {
   const [activeTab, setActiveTab] = useState<TabKey>('resumen');
 
   const groupCases = useMemo(
-    () => cases.filter((c) => c.group_id === currentGroupId || (!c.group_id && c.id === currentGroupId)),
+    () => cases.filter((c) => c.id === currentGroupId),
     [cases, currentGroupId]
   );
 
@@ -344,6 +344,7 @@ export default function GroupViewScreen() {
             groupCases={groupCases}
             allLoans={allLoans}
             allCollaterals={allCollaterals}
+            allLoanCollaterals={allLoanCollaterals}
           />
         )}
         {activeTab === 'documentos' && (

@@ -51,7 +51,7 @@ export async function fetchCasesForTenant(): Promise<Case[]> {
 
   // Build flat loan_collaterals and collaterals arrays on each case
   return (data || []).map(c => {
-    const loanCollaterals: { loan_id: string; collateral_id: string; lien_rank: number }[] = [];
+    const loanCollaterals: { loan_id: string; collateral_id: string; lien_rank: number; is_enforced?: boolean }[] = [];
     for (const loan of (c.loans || [])) {
       for (const lc of (loan.loan_collaterals || [])) {
         loanCollaterals.push(lc);
@@ -94,7 +94,7 @@ export async function fetchCaseById(caseId: string): Promise<Case | null> {
   if (error || !data) return null;
 
   // Extract collateral IDs from loans -> loan_collaterals
-  const loanCollaterals: { loan_id: string; collateral_id: string; lien_rank: number }[] = [];
+  const loanCollaterals: { loan_id: string; collateral_id: string; lien_rank: number; is_enforced?: boolean }[] = [];
   for (const loan of (data.loans || [])) {
     for (const lc of (loan.loan_collaterals || [])) {
       loanCollaterals.push(lc);

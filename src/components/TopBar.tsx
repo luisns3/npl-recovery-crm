@@ -12,7 +12,7 @@ interface SearchResult {
 }
 
 export default function TopBar() {
-  const { openCase, openGroup } = useCrm();
+  const { openCase } = useCrm();
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -39,11 +39,7 @@ export default function TopBar() {
   function handleResultClick(r: SearchResult) {
     setShowResults(false);
     setSearchTerm('');
-    if (r.result_type === 'group') {
-      openGroup(r.result_id);
-    } else {
-      openCase(r.case_id);
-    }
+    openCase(r.result_type === 'group' ? r.result_id : r.case_id);
   }
 
   return (

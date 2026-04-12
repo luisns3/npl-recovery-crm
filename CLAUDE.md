@@ -23,19 +23,28 @@ NPL Recovery CRM — a React SPA for debt recovery managers handling non-perform
 
 - **verbatimModuleSyntax** is enabled in tsconfig — all type-only imports must use `import type { ... }`. Value imports stay as `import { ... }`. Mixing them in a single import requires `import { CONST, type Type }` syntax.
 - **Snake_case fields** — all database column names and TypeScript interfaces use snake_case (e.g. `created_at`, `case_id`, `is_blocked`)
-- Components are organized by feature area: `Dashboard/`, `CaseDetail/`, `CallLog/`, `NextAction/`, `Proposals/`, `Auth/`
+- Components are organized by feature area: `Dashboard/`, `CaseDetail/`, `CallLog/`, `NextAction/`, `Proposals/`, `Auth/`, `GroupView/`, `Perimeter/`, `Tasks/`, `CallQueue/`, `ActiveCall/`
 - All entity types are defined in `src/types.ts` — this is the single source of truth for the data model
-- The call flow is enforced: Case Detail → Call Log (mandatory) → Next Action → Next Case
+- The call flow is enforced: Active Call → Call Log (mandatory) → Next Action → Next Case
 - Database queries live in `src/lib/queries.ts`
+
+## Case = Group (important)
+
+**"Case" and "group" are the same thing.** Every expediente is both a case and a group — one entity, one view. `GroupViewScreen` is the universal case detail view. `openCase(id)` is an alias for `openGroup(id)` and always opens `GroupViewScreen`. Never use `group_id` as a navigation target — always use `c.id`. The `case_detail` ViewMode still exists in code but is unreachable via normal navigation.
 
 ## Data Model Notes
 
 - A `Case` (expediente) contains parties, contacts, loans, collaterals, interactions, alerts, and proposals
-- Loans and collaterals have a many-to-many relationship via `loan_collaterals` (with lien rank)
+- Loans and collaterals have a many-to-many relationship via `loan_collaterals` (fields: `loan_id`, `collateral_id`, `lien_rank`, `is_enforced`)
+- **Judicial procedures:** One procedimiento per loan (`loan.procedimiento_id`). Collaterals do NOT have their own `procedimiento_id`. Which collaterals are included in the enforcement is tracked via `loan_collaterals.is_enforced = TRUE`.
 - Proposals are linked to loans and collaterals via junction tables (`proposal_loans`, `proposal_collaterals`)
 - Phone contacts can be marked as `is_blocked` which blocks them from the call button
 - All tables have `tenant_id` for multi-tenant isolation via RLS
 - Valuations are a separate table linked to collaterals (not a field on collateral)
+
+## GroupView Tabs
+
+`GroupViewScreen` has 8 tabs: Resumen · Participantes · Actividad · Propuestas · Deuda · Legal · Documentos · Conciliación Bancaria
 
 ## Priority Queue Logic
 
@@ -48,4 +57,4 @@ Located in `src/utils/priorityQueue.ts`. Sort order:
 
 ## Database Migrations
 
-Located in `supabase/migrations/`. Run in order 001-010 via Supabase SQL Editor or CLI.
+Located in `supabase/migrations/`. Run in order 001-012 via Supabase SQL Editor or CLI.

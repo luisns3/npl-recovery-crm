@@ -28,8 +28,8 @@ ALTER TABLE loans
   ADD COLUMN IF NOT EXISTS last_payment_amount NUMERIC(15,2),
   ADD COLUMN IF NOT EXISTS procedimiento_id    TEXT;
 
-ALTER TABLE collaterals
-  ADD COLUMN IF NOT EXISTS procedimiento_id TEXT;
+ALTER TABLE loan_collaterals
+  ADD COLUMN IF NOT EXISTS is_enforced BOOLEAN DEFAULT FALSE;
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- 2. Enrich existing loans with financial detail
@@ -191,11 +191,24 @@ INSERT INTO collaterals (id, tenant_id, property_type, address, cadastral_ref, p
   ('c2000000-0000-0000-0000-00000000000f'::UUID, 'a1000000-0000-0000-0000-000000000001', 'Parking',            'Calle Correo 10, Sótano -2 Plaza 12, Bilbao 48009', NULL,                'Finca 50790, Tomo 10, Libro 7',  13,  'vacant',          43.2620,  -2.9250)
 ON CONFLICT DO NOTHING;
 
-UPDATE collaterals SET procedimiento_id = 'PROC-2024-015' WHERE id = 'c2000000-0000-0000-0000-000000000008';
-UPDATE collaterals SET procedimiento_id = 'PROC-2024-015' WHERE id = 'c2000000-0000-0000-0000-000000000009';
-UPDATE collaterals SET procedimiento_id = 'PROC-2023-030' WHERE id = 'c2000000-0000-0000-0000-00000000000a';
-UPDATE collaterals SET procedimiento_id = 'PROC-2023-030' WHERE id = 'c2000000-0000-0000-0000-00000000000b';
-UPDATE collaterals SET procedimiento_id = 'PROC-2023-045' WHERE id = 'c2000000-0000-0000-0000-00000000000d';
+-- Mark which collaterals are being enforced in each loan's procedimiento.
+-- A collateral is enforced when the creditor has included it in the judicial enforcement action.
+-- LN-2024-015A (PROC-2024-015): BCN flat enforced as 1st mortgage
+UPDATE loan_collaterals SET is_enforced = TRUE
+  WHERE loan_id = 'b2000000-0000-0000-0000-000000000009' AND collateral_id = 'c2000000-0000-0000-0000-000000000008';
+-- LN-2024-015B (PROC-2024-015): BCN flat (2nd) + BCN office (1st) both enforced
+UPDATE loan_collaterals SET is_enforced = TRUE
+  WHERE loan_id = 'b2000000-0000-0000-0000-00000000000a' AND collateral_id = 'c2000000-0000-0000-0000-000000000008';
+UPDATE loan_collaterals SET is_enforced = TRUE
+  WHERE loan_id = 'b2000000-0000-0000-0000-00000000000a' AND collateral_id = 'c2000000-0000-0000-0000-000000000009';
+-- LN-2023-030A (PROC-2023-030): SEV villa + SEV garage both enforced
+UPDATE loan_collaterals SET is_enforced = TRUE
+  WHERE loan_id = 'b2000000-0000-0000-0000-00000000000c' AND collateral_id = 'c2000000-0000-0000-0000-00000000000a';
+UPDATE loan_collaterals SET is_enforced = TRUE
+  WHERE loan_id = 'b2000000-0000-0000-0000-00000000000c' AND collateral_id = 'c2000000-0000-0000-0000-00000000000b';
+-- LN-2023-045 (PROC-2023-045): SS country house enforced
+UPDATE loan_collaterals SET is_enforced = TRUE
+  WHERE loan_id = 'b2000000-0000-0000-0000-00000000000f' AND collateral_id = 'c2000000-0000-0000-0000-00000000000d';
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- 9. New loans

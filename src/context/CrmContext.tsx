@@ -91,16 +91,17 @@ export function CrmProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const openCase = useCallback((id: string) => {
-    setCurrentCaseId(id);
-    setCurrentView('case_detail');
-  }, []);
-
   const openGroup = useCallback((groupId: string) => {
     setPreviousView(currentView);
     setCurrentGroupId(groupId);
     setCurrentView('group_view');
   }, [currentView]);
+
+  // openCase is an alias: a case and a group are the same view.
+  // Look up the case's group_id; fall back to the case id itself.
+  const openCase = useCallback((id: string) => {
+    openGroup(id);
+  }, [openGroup]);
 
   const startCalls = useCallback(() => {
     if (queue.length > 0) {

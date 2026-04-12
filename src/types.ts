@@ -164,13 +164,13 @@ export interface Collateral {
   occupancy_status: OccupancyStatus;
   latitude: number | null;
   longitude: number | null;
-  procedimiento_id?: string | null;
 }
 
 export interface LoanCollateral {
   loan_id: string;
   collateral_id: string;
   lien_rank: number;
+  is_enforced?: boolean; // true = this collateral is included in the loan's judicial enforcement action
 }
 
 export interface Lien {
@@ -252,6 +252,9 @@ export interface Proposal {
   created_at: string;
   cancelled_at: string | null;
   cancelled_by: string | null;
+  // Committee review fields (for segmentation bucket 3.2.x)
+  committee_reviewed?: boolean;   // true = proposal was presented to auction committee
+  committee_approved?: boolean;   // true = committee approved it (distinguishes 3.2.1 denied vs 3.2.2 desisted)
   // Loaded via junction tables
   loan_ids?: string[];
   collateral_ids?: string[];
@@ -294,6 +297,12 @@ export interface Case {
   adjudication_date: string | null;
   created_at: string;
   updated_at: string;
+  // Segmentation flags (pending DB migration — treated as false when undefined)
+  is_fully_cancelled?: boolean;                        // Bucket 0: all loans in group cancelled
+  is_tail?: boolean;                                   // Bucket 6: group flagged as tail
+  committee_reviewed?: boolean;                        // Bucket 4.1: reviewed by auction committee
+  auction_style?: 'cash_at_court' | 'real_estate';    // Bucket 5.1 vs 5.2
+  is_all_deceased?: boolean;                           // Bucket 3.3.2.1: all borrowers deceased
   // Nested data (loaded via joins)
   parties: Party[];
   contacts: Contact[];
